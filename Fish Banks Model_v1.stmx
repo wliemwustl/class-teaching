@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee"/>
+		<name>Fish Banks Model_v1</name>
+		<uuid>842ed788-2655-4370-b487-5f26922f0678</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="2.0.1" isee:build_number="2228" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="1.375" isee:simulation_delay="0.125" isee:restore_on_start="false" method="Euler" time_units="Years" isee:instantaneous_flows="true" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>1</start>
+		<stop>12</stop>
+		<dt reciprocal="true">12</dt>
+	</sim_specs>
+	<isee:prefs show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rerun_on_structure_change="false" saved_runs="5" keep="false" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<default_format/>
+	<model_units>
+		<unit name="Miles">
+			<eqn/>
+			<alias>mi</alias>
+			<alias>mile</alias>
+		</unit>
+		<unit name="Square Miles">
+			<eqn>Miles^2</eqn>
+			<alias>sq mi</alias>
+			<alias>square mile</alias>
+		</unit>
+		<unit name="Years">
+			<eqn/>
+			<alias>yr</alias>
+			<alias>year</alias>
+		</unit>
+		<unit name="Dimensionless">
+			<eqn>1</eqn>
+			<alias>dmnl</alias>
+			<alias>unitless</alias>
+		</unit>
+	</model_units>
+	<model>
+		<isee:extra_collection_variables>
+			<isee:extra_collection_variable name="Ships"/>
+			<isee:extra_collection_variable name="Fish"/>
+			<isee:extra_collection_variable name="Yearly_Profits"/>
+		</isee:extra_collection_variables>
+		<variables>
+			<stock name="Fish">
+				<doc>Fish are the number of fish alive within the fishing bed which is being modeled. At the beginning of the simulation there are initially 1000 fish alive in the bed.</doc>
+				<eqn>INIT_Fish</eqn>
+				<inflow>Fish_Hatch_Rate</inflow>
+				<outflow>Total_catch_per_year</outflow>
+				<outflow>Fish_Death_Rate</outflow>
+				<non_negative/>
+				<units>Fish</units>
+			</stock>
+			<flow name="Fish Hatch Rate">
+				<doc>The fish hatch rate is the number of fish hatched per year. It is
+computed by multiplying the total fish population by a hatch fraction. The hatch
+fraction is the average number of offspring per year per fish.</doc>
+				<eqn>Fish*Hatch_Fraction</eqn>
+				<non_negative/>
+				<units>Fish/Years</units>
+			</flow>
+			<aux name="Hatch Fraction">
+				<doc>Hatch fraction is the average number of offspring per year per fish. It is
+the fractional increase in the population per year. A hatch fraction of 6 means that every
+female fish (half the fish population) will have an average of 12 offspring per year.</doc>
+				<eqn>6</eqn>
+				<units>fish/fish/years</units>
+			</aux>
+			<flow name="Total catch per year">
+				<doc>Total Catch per Year is the total number of fish which are
+harvested from the fishing waters each year. It is computed by multiplying the number of ships by the catch per ship.</doc>
+				<eqn>Ships*Catch_per_ship*Switch_Fishing_Industry</eqn>
+				<non_negative/>
+				<units>Fish/Years</units>
+			</flow>
+			<flow name="Fish Death Rate">
+				<doc>Fish Death Rate is the number of fish per year which die from
+causes other than fish harvesting.</doc>
+				<eqn>Fish*Death_Fraction</eqn>
+				<non_negative/>
+				<units>Fish/Years</units>
+			</flow>
+			<aux name="Death\nFraction">
+				<eqn>Fish/Carrying_Capacity</eqn>
+				<gf>
+					<xscale min="0" max="2"/>
+					<yscale min="5" max="11"/>
+					<ypts>5.22,5.23,5.255,5.345,5.665,6,6.44,7.13,7.97,9.32,11</ypts>
+				</gf>
+				<units>1/year</units>
+			</aux>
+			<aux name="Carrying Capacity">
+				<eqn>1200</eqn>
+				<units>Fish</units>
+			</aux>
+			<aux name="Density">
+				<eqn>Fish/Area</eqn>
+				<units>fish/square miles</units>
+			</aux>
+			<aux name="INIT Fish">
+				<doc>Fish are the number of fish alive within the fishing bed which is being modeled. At the beginning of the simulation there are initially 1000 fish alive in the bed.</doc>
+				<eqn>1000</eqn>
+				<units>Fish</units>
+			</aux>
+			<stock name="Ships">
+				<eqn>INIT_Ships</eqn>
+				<inflow>Ship_Building_Rate</inflow>
+				<non_negative/>
+				<units>Ships</units>
+			</stock>
+			<aux name="INIT Ships">
+				<eqn>10</eqn>
+				<units>Ships</units>
+			</aux>
+			<flow name="Ship Building\nRate">
+				<doc>The Ship Building Rate is the number of new ships which are built
+each year. It is determined by the amount of money invested each year in new
+ships (profits_each_year*fraction_invested) divided by the ship cost. The units are
+($/year)/($/ship)=(ship/year).</doc>
+				<eqn>MAX(0, Yearly_Profits*Fraction_Invested/Ship_Cost)</eqn>
+				<non_negative/>
+				<units>Ships/Years</units>
+			</flow>
+			<aux name="Fraction Invested">
+				<doc>The Fraction Invested is the fraction of the profits each year which are
+invested in the building of new ships.</doc>
+				<eqn>.2</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Ship Cost">
+				<eqn>300</eqn>
+				<units>dollars/ships</units>
+			</aux>
+			<aux name="Catch per ship">
+				<eqn>Density</eqn>
+				<gf>
+					<xscale min="0" max="12"/>
+					<yscale min="0" max="25.5"/>
+					<ypts>0,5,10.4,15.9,20.2,22.1,23.2,23.8,24.2,24.6,25,25.3,25.5</ypts>
+				</gf>
+				<units>fish/ships/years</units>
+			</aux>
+			<aux name="INIT Total Profits">
+				<eqn>0</eqn>
+				<units>Dollars</units>
+			</aux>
+			<aux name="Area">
+				<doc>The Area is the size of the fish bed in square miles.</doc>
+				<eqn>100</eqn>
+				<units>Square Miles</units>
+			</aux>
+			<aux name="Total Operating Costs">
+				<eqn>Ships*Operating_cost_per_ships</eqn>
+				<units>dollars/years</units>
+			</aux>
+			<aux name="Operating cost per ships">
+				<eqn>250</eqn>
+				<units>dollars/Ships/Year</units>
+			</aux>
+			<aux name="Fish Price">
+				<eqn>20</eqn>
+				<units>Dollars/fish</units>
+			</aux>
+			<aux name="Revenues">
+				<eqn>Fish_Price*Total_catch_per_year</eqn>
+				<units>dollars/years</units>
+			</aux>
+			<aux name="Yearly Profits">
+				<eqn>Revenues-Total_Operating_Costs</eqn>
+				<units>dollars/years</units>
+			</aux>
+			<aux name="Switch Fishing Industry">
+				<eqn>0</eqn>
+				<format precision="1"/>
+				<range min="0" max="1"/>
+				<units>dmnl</units>
+			</aux>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="1"/>
+						<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF7F00" thickness="1"/>
+						<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="black" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="black" background="white"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD"/>
+				<isee:shape color="black" background="white" opacity="1" transparent_background="true"/>
+				<isee:selector color="black" background="white"/>
+				<isee:iframe color="black" background="white"/>
+				<isee:financial_table color="black" background="white" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="false" background="white" page_width="768" page_height="588" isee:page_cols="2" isee:page_rows="2" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_color="blue" font_size="12pt" label_side="top">
+						<shape type="rectangle" width="45" height="35"/>
+					</stock>
+					<flow color="blue" background="white" font_color="blue" font_size="12pt" label_side="bottom"/>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" label_side="bottom"/>
+					<module color="blue" background="white" font_color="blue" font_size="12pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_color="blue" font_size="12pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_size="9pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="1"/>
+							<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF7F00" thickness="1"/>
+							<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#C8C8C8" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock x="288" y="127" name="Fish"/>
+				<flow x="209.25" y="127" name="Fish Hatch Rate">
+					<pts>
+						<pt x="153" y="127"/>
+						<pt x="265.5" y="127"/>
+					</pts>
+				</flow>
+				<aux x="147" y="58" name="Hatch Fraction"/>
+				<connector uid="1" angle="347.471">
+					<from>Hatch_Fraction</from>
+					<to>Fish_Hatch_Rate</to>
+				</connector>
+				<connector uid="2" angle="129.806">
+					<from>Fish</from>
+					<to>Fish_Hatch_Rate</to>
+				</connector>
+				<flow x="288" y="199.25" name="Total catch per year">
+					<pts>
+						<pt x="288" y="144.5"/>
+						<pt x="288" y="275"/>
+					</pts>
+				</flow>
+				<flow x="363.75" y="129" name="Fish Death Rate">
+					<pts>
+						<pt x="310.5" y="129"/>
+						<pt x="441" y="129"/>
+					</pts>
+				</flow>
+				<aux x="368.25" y="61" name="Death\nFraction"/>
+				<aux x="442" y="30" name="Carrying Capacity"/>
+				<connector uid="3" angle="165.964">
+					<from>Carrying_Capacity</from>
+					<to>Death_Fraction</to>
+				</connector>
+				<connector uid="4" angle="95.7106">
+					<from>Fish</from>
+					<to>Death_Fraction</to>
+				</connector>
+				<connector uid="5" angle="315.625">
+					<from>Death_Fraction</from>
+					<to>Fish_Death_Rate</to>
+				</connector>
+				<aux x="173" y="178.25" name="Density"/>
+				<aux x="651" y="43" name="INIT Fish"/>
+				<connector uid="6" angle="34.5625">
+					<from>Fish</from>
+					<to>Fish_Death_Rate</to>
+				</connector>
+				<stock x="416" y="317" name="Ships"/>
+				<aux x="651" y="100.5" name="INIT Ships"/>
+				<flow label_side="bottom" x="416" y="378.25" name="Ship Building\nRate">
+					<pts>
+						<pt x="416" y="422"/>
+						<pt x="416" y="334.5"/>
+					</pts>
+				</flow>
+				<aux x="489" y="351" name="Fraction Invested"/>
+				<aux x="357" y="333" name="Ship Cost"/>
+				<connector uid="7" angle="289.799">
+					<from>Ship_Cost</from>
+					<to>Ship_Building_Rate</to>
+				</connector>
+				<connector uid="8" angle="225">
+					<from>Fraction_Invested</from>
+					<to>Ship_Building_Rate</to>
+				</connector>
+				<aux x="201.75" y="250" name="Catch per ship"/>
+				<connector uid="9" angle="86.8202">
+					<from>Ships</from>
+					<to>Total_catch_per_year</to>
+				</connector>
+				<connector uid="10" angle="356.682">
+					<from>Catch_per_ship</from>
+					<to>Total_catch_per_year</to>
+				</connector>
+				<aux x="651" y="160.25" name="INIT Total Profits"/>
+				<aux x="102" y="206.25" name="Area"/>
+				<aux x="504.75" y="467" name="Total Operating Costs"/>
+				<aux x="629" y="455" name="Operating cost per ships"/>
+				<connector uid="11" angle="14.7436">
+					<from>Ships</from>
+					<to>Total_Operating_Costs</to>
+				</connector>
+				<connector uid="12" angle="251.565">
+					<from>Operating_cost_per_ships</from>
+					<to>Total_Operating_Costs</to>
+				</connector>
+				<connector uid="13" angle="197.103">
+					<from>Fish</from>
+					<to>Density</to>
+				</connector>
+				<connector uid="14" angle="66.6148">
+					<from>Area</from>
+					<to>Density</to>
+				</connector>
+				<aux x="173" y="360.25" name="Fish Price"/>
+				<aux x="270" y="325" name="Revenues"/>
+				<connector uid="15" angle="241.206">
+					<from>Total_catch_per_year</from>
+					<to>Revenues</to>
+				</connector>
+				<connector uid="16" angle="19.9712">
+					<from>Fish_Price</from>
+					<to>Revenues</to>
+				</connector>
+				<connector uid="17" angle="288.435">
+					<from>Revenues</from>
+					<to>Yearly_Profits</to>
+				</connector>
+				<aux x="324" y="382" name="Yearly Profits"/>
+				<connector uid="18" angle="209.982">
+					<from>Total_Operating_Costs</from>
+					<to>Yearly_Profits</to>
+				</connector>
+				<connector uid="19" angle="250.949">
+					<from>Density</from>
+					<to>Catch_per_ship</to>
+				</connector>
+				<connector uid="20" angle="344.745">
+					<from>Yearly_Profits</from>
+					<to>Ship_Building_Rate</to>
+				</connector>
+				<isee:loop_indicator text="B" orientation="clockwise" uid="21" x="309" y="67" width="30" height="30"/>
+				<isee:loop_indicator text="B" orientation="counter_clockwise" uid="22" x="210.75" y="181" width="30" height="30"/>
+				<isee:loop_indicator text="R" orientation="counter_clockwise" uid="23" x="323.75" y="265" width="30" height="30"/>
+				<isee:loop_indicator text="B" orientation="clockwise" uid="24" x="465.75" y="405.25" width="30" height="30"/>
+				<stacked_container uid="25" x="947" y="155.25">
+					<graph width="350" height="250" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Fish"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="false" pen_width="1" index="0" right_axis="true" show_y_axis="true">
+							<entity name="Ships"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="26" x="947" y="431.25">
+					<graph width="350" height="250" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="false" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Yearly_Profits"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux x="651" y="247" name="Switch Fishing Industry"/>
+				<connector uid="27" angle="161.565">
+					<from>
+						<alias uid="28"/>
+					</from>
+					<to>Total_catch_per_year</to>
+				</connector>
+				<text_box uid="29" x="783" y="576" width="260" height="58">source: Building the Fish Banks Model and Renewable Resource Depletion
+MIT D-4543-2</text_box>
+				<alias font_style="italic" uid="28" x="368.25" y="169.25" width="18" height="18">
+					<of>Switch_Fishing_Industry</of>
+				</alias>
+			</view>
+		</views>
+	</model>
+	<isee:controls>
+		<isee:control priority="interactive" name="Switch_Fishing_Industry" value="1"/>
+	</isee:controls>
+</xmile>
+

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee"/>
+		<name>Coflow with Aging Chain Demo_v2</name>
+		<uuid>2b81a66b-2203-49bc-bb74-15702f728497</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="2.0.1" isee:build_number="2228" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="1.5" isee:simulation_delay="0.0254237" isee:restore_on_start="false" method="Euler" time_units="months" isee:instantaneous_flows="true" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>1</start>
+		<stop>60</stop>
+		<dt reciprocal="true">12</dt>
+	</sim_specs>
+	<isee:prefs show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rerun_on_structure_change="false" saved_runs="5" keep="false" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<default_format/>
+	<model_units>
+		<unit name="People">
+			<eqn/>
+			<alias>person</alias>
+			<alias>persons</alias>
+		</unit>
+		<unit name="Months">
+			<eqn/>
+			<alias>mo</alias>
+			<alias>month</alias>
+		</unit>
+	</model_units>
+	<model>
+		<variables>
+			<stock name="Novice\nClinicians">
+				<eqn>INIT_Novice</eqn>
+				<inflow>Hiring</inflow>
+				<outflow>Getting_promoted</outflow>
+				<non_negative/>
+				<units>People</units>
+			</stock>
+			<flow name="Hiring">
+				<eqn>Base_rate_of_hiring</eqn>
+				<non_negative/>
+				<units>people/months</units>
+			</flow>
+			<flow name="Getting promoted">
+				<eqn>Novice_Clinicians/Avg_time_to_become_experienced</eqn>
+				<non_negative/>
+				<units>people/months</units>
+			</flow>
+			<aux name="INIT Novice">
+				<eqn>50</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="Avg time to become experienced">
+				<eqn>36</eqn>
+				<units>months</units>
+			</aux>
+			<aux name="Base rate of hiring">
+				<eqn>5</eqn>
+				<units>people/months</units>
+			</aux>
+			<stock name="Novice\nClinician\nStress">
+				<eqn>INIT_Novice_Clinician_Stress</eqn>
+				<inflow>Increasing_novice_clinician_stress</inflow>
+				<inflow>Accuiring_stress_on_the_job</inflow>
+				<outflow>Decreases_in_novice_clinician_stress</outflow>
+				<units>stress units</units>
+			</stock>
+			<aux name="INIT Novice\nClinician Stress">
+				<eqn>100</eqn>
+				<units>stress units</units>
+			</aux>
+			<flow name="Increasing novice clinician stress">
+				<eqn>Clinician_stress_at_hiring*Hiring</eqn>
+				<non_negative/>
+				<units>stress units/months</units>
+			</flow>
+			<aux name="Clinician stress\nat hiring">
+				<eqn>2</eqn>
+				<units>stress units/people</units>
+			</aux>
+			<aux name="Avg stress of clinicians">
+				<eqn>Novice_Clinician_Stress/Novice_Clinicians</eqn>
+				<units>stress units/people</units>
+			</aux>
+			<flow name="Decreases in novice clinician stress">
+				<eqn>Getting_promoted*Avg_stress_of_clinicians</eqn>
+				<non_negative/>
+				<units>stress units/months</units>
+			</flow>
+			<flow name="Accuiring stress\non the job">
+				<eqn>Rate_of_adding_stress_Novice*Novice_Clinicians</eqn>
+				<non_negative/>
+				<units>stress units/months</units>
+			</flow>
+			<aux name="Rate of\nadding stress\nNovice">
+				<eqn>.01</eqn>
+				<units>stress units/person/months</units>
+			</aux>
+			<stock name="Experienced\nclinicians">
+				<eqn>INIT_experienced_clinicians</eqn>
+				<inflow>Getting_promoted</inflow>
+				<outflow>Retiring</outflow>
+				<units>People</units>
+			</stock>
+			<aux name="INIT experienced clinicians">
+				<eqn>1</eqn>
+				<units>people</units>
+			</aux>
+			<stock name="Experience\nClinician\nstress">
+				<eqn>INIT_Expereinced_Clinician_Stress_1</eqn>
+				<inflow>Decreases_in_novice_clinician_stress</inflow>
+				<inflow>&quot;Acquiring_stress_on_job_-_experienced&quot;</inflow>
+				<outflow>Stress_retiring</outflow>
+				<non_negative/>
+				<units>stress units</units>
+			</stock>
+			<aux name="INIT Expereinced\nClinician Stress 1">
+				<eqn>2</eqn>
+				<units>stress units</units>
+			</aux>
+			<flow name="Retiring">
+				<eqn>Experienced_clinicians/AT_retire</eqn>
+				<non_negative/>
+				<units>people/months</units>
+			</flow>
+			<aux name="AT retire">
+				<eqn>120</eqn>
+				<units>months</units>
+			</aux>
+			<flow name="Stress retiring">
+				<eqn>Retiring*Avg_stress_of_experienced_clinicians</eqn>
+				<non_negative/>
+				<units>stress units/months</units>
+			</flow>
+			<aux name="Avg stress of experienced clinicians">
+				<eqn>Experience_Clinician_stress/Experienced_clinicians</eqn>
+				<units>stress units/people</units>
+			</aux>
+			<flow name="Acquiring stress on job - experienced">
+				<eqn>Experienced_clinicians*Rate_of_adding_stressed_Experienced</eqn>
+				<non_negative/>
+				<units>stress units/months</units>
+			</flow>
+			<aux name="Rate of adding\nstressed\nExperienced">
+				<eqn>.02</eqn>
+				<units>1/months</units>
+			</aux>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="1"/>
+						<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF7F00" thickness="1"/>
+						<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="#66CC66" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="#E95F74" background="silver"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD"/>
+				<isee:shape color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid" opacity="1" transparent_background="true"/>
+				<isee:selector color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:iframe color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid"/>
+				<isee:financial_table color="black" background="#E0E0E0" text_align="right" font_size="12pt" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="false" background="white" page_width="768" page_height="588" isee:page_cols="3" isee:page_rows="2" isee:scroll_x="147" isee:scroll_y="26" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_color="blue" font_size="12pt" label_side="top">
+						<shape type="rectangle" width="45" height="35"/>
+					</stock>
+					<flow color="blue" background="white" font_color="blue" font_size="12pt" label_side="bottom"/>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" font_size="12pt" label_side="bottom"/>
+					<module color="blue" background="white" font_color="blue" font_size="12pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_color="blue" font_size="12pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_size="12pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="1"/>
+							<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF7F00" thickness="1"/>
+							<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#C8C8C8" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="beginning" report_flows="instantaneous" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock label_side="center" x="201.5" y="170.5" width="85" height="60" name="Novice\nClinicians"/>
+				<flow x="135.5" y="197.5" name="Hiring">
+					<pts>
+						<pt x="69.5" y="197.5"/>
+						<pt x="201.5" y="197.5"/>
+					</pts>
+				</flow>
+				<flow x="360" y="199" name="Getting promoted">
+					<pts>
+						<pt x="286.5" y="199"/>
+						<pt x="445.5" y="199"/>
+					</pts>
+				</flow>
+				<aux x="709" y="479" name="INIT Novice"/>
+				<connector uid="1" angle="24.9439">
+					<from>Novice_Clinicians</from>
+					<to>Getting_promoted</to>
+				</connector>
+				<stacked_container uid="2" x="975" y="163">
+					<graph width="350" height="250" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Novice_Clinicians"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Experienced_clinicians"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux x="384" y="124" name="Avg time to become experienced"/>
+				<text_box uid="3" x="802" y="566.5" width="428" height="58">Ellis Ballard
+Designing Sustainable Policies and Programs: A System Dynamics Approach
+Spring 2021</text_box>
+				<aux x="98" y="124" name="Base rate of hiring"/>
+				<connector uid="4" angle="331.821">
+					<from>Base_rate_of_hiring</from>
+					<to>Hiring</to>
+				</connector>
+				<connector uid="5" angle="219.806">
+					<from>Avg_time_to_become_experienced</from>
+					<to>Getting_promoted</to>
+				</connector>
+				<stock label_side="center" x="202.5" y="374.5" width="80" height="58" name="Novice\nClinician\nStress"/>
+				<aux x="709" y="541.5" name="INIT Novice\nClinician Stress"/>
+				<flow x="141.25" y="400" name="Increasing novice clinician stress">
+					<pts>
+						<pt x="80" y="400"/>
+						<pt x="202.5" y="400"/>
+					</pts>
+				</flow>
+				<connector uid="6" angle="227.862">
+					<from>Hiring</from>
+					<to>Increasing_novice_clinician_stress</to>
+				</connector>
+				<aux x="80" y="457.5" name="Clinician stress\nat hiring"/>
+				<connector uid="7" angle="85.0303">
+					<from>Clinician_stress_at_hiring</from>
+					<to>Increasing_novice_clinician_stress</to>
+				</connector>
+				<aux x="308.5" y="316" name="Avg stress of clinicians"/>
+				<connector uid="8" angle="271.992">
+					<from>Novice_Clinicians</from>
+					<to>Avg_stress_of_clinicians</to>
+				</connector>
+				<connector uid="9" angle="81.4309">
+					<from>Novice_Clinician_Stress</from>
+					<to>Avg_stress_of_clinicians</to>
+				</connector>
+				<flow x="356.5" y="402" name="Decreases in novice clinician stress">
+					<pts>
+						<pt x="282.5" y="402"/>
+						<pt x="442.5" y="402"/>
+					</pts>
+				</flow>
+				<connector uid="10" angle="303.69">
+					<from>Getting_promoted</from>
+					<to>Decreases_in_novice_clinician_stress</to>
+				</connector>
+				<connector uid="11" angle="331.928">
+					<from>Avg_stress_of_clinicians</from>
+					<to>Decreases_in_novice_clinician_stress</to>
+				</connector>
+				<stacked_container uid="12" x="975" y="420">
+					<graph width="350" height="250" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Avg_stress_of_clinicians"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Avg_stress_of_experienced_clinicians"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<flow x="242.5" y="319.75" name="Accuiring stress\non the job">
+					<pts>
+						<pt x="242.5" y="265"/>
+						<pt x="242.5" y="374.5"/>
+					</pts>
+				</flow>
+				<aux x="153.5" y="249" name="Rate of\nadding stress\nNovice"/>
+				<connector uid="13" angle="321.517">
+					<from>Rate_of_adding_stress_Novice</from>
+					<to>Accuiring_stress_on_the_job</to>
+				</connector>
+				<stock label_side="center" x="445.5" y="174.5" width="67" height="52" name="Experienced\nclinicians"/>
+				<aux x="709" y="439.5" name="INIT experienced clinicians"/>
+				<stock label_side="center" x="442.5" y="372.5" width="75" height="57" name="Experience\nClinician\nstress"/>
+				<aux x="709" y="612.5" name="INIT Expereinced\nClinician Stress 1"/>
+				<flow x="571.75" y="200" name="Retiring">
+					<pts>
+						<pt x="512.5" y="200"/>
+						<pt x="655" y="200"/>
+					</pts>
+				</flow>
+				<aux x="603" y="124" name="AT retire"/>
+				<connector uid="14" angle="208.61">
+					<from>AT_retire</from>
+					<to>Retiring</to>
+				</connector>
+				<connector uid="15" angle="28.3342">
+					<from>Experienced_clinicians</from>
+					<to>Retiring</to>
+				</connector>
+				<flow x="581.25" y="402" name="Stress retiring">
+					<pts>
+						<pt x="517.5" y="402"/>
+						<pt x="669" y="402"/>
+					</pts>
+				</flow>
+				<connector uid="16" angle="314.162">
+					<from>Retiring</from>
+					<to>Stress_retiring</to>
+				</connector>
+				<aux x="557" y="314.75" name="Avg stress of experienced clinicians"/>
+				<connector uid="17" angle="86.9335">
+					<from>Experience_Clinician_stress</from>
+					<to>Avg_stress_of_experienced_clinicians</to>
+				</connector>
+				<connector uid="18" angle="284.56">
+					<from>Experienced_clinicians</from>
+					<to>Avg_stress_of_experienced_clinicians</to>
+				</connector>
+				<connector uid="19" angle="324.058">
+					<from>Avg_stress_of_experienced_clinicians</from>
+					<to>Stress_retiring</to>
+				</connector>
+				<flow x="480" y="314.75" name="Acquiring stress on job - experienced">
+					<pts>
+						<pt x="480" y="257"/>
+						<pt x="480" y="372.5"/>
+					</pts>
+				</flow>
+				<aux x="409.25" y="249" name="Rate of adding\nstressed\nExperienced"/>
+				<connector uid="20" angle="317.098">
+					<from>Rate_of_adding_stressed_Experienced</from>
+					<to>&quot;Acquiring_stress_on_job_-_experienced&quot;</to>
+				</connector>
+				<connector uid="21" angle="232.784">
+					<from>Novice_Clinicians</from>
+					<to>Accuiring_stress_on_the_job</to>
+				</connector>
+				<connector uid="22" angle="231.34">
+					<from>Experienced_clinicians</from>
+					<to>&quot;Acquiring_stress_on_job_-_experienced&quot;</to>
+				</connector>
+			</view>
+		</views>
+	</model>
+</xmile>
+

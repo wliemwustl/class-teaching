@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee"/>
+		<name>Behavioral Reproduction_Stray Dogs Model_SOLUTION</name>
+		<uuid>bafc4c8c-afe5-4e14-9808-85b1ab2d2796</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="2.0.1" isee:build_number="2228" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="1.5" isee:simulation_delay="0.0652174" isee:restore_on_start="false" method="Euler" time_units="Months" isee:instantaneous_flows="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>1</start>
+		<stop>24</stop>
+		<dt reciprocal="true">4</dt>
+	</sim_specs>
+	<isee:prefs show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rerun_on_structure_change="false" saved_runs="5" keep="false" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<default_format/>
+	<model_units>
+		<unit name="US Dollars">
+			<eqn/>
+			<alias>USD</alias>
+			<alias>$</alias>
+		</unit>
+		<unit name="US Dollars Per Month">
+			<eqn>US_Dollars/Months</eqn>
+			<alias>US Dollar Per Month</alias>
+		</unit>
+		<unit name="Months">
+			<eqn/>
+			<alias>mo</alias>
+			<alias>month</alias>
+		</unit>
+	</model_units>
+	<model>
+		<variables>
+			<stock name="Dogs\nin shelter">
+				<eqn>10</eqn>
+				<inflow>Rescuing</inflow>
+				<inflow>Returning_Dogs</inflow>
+				<outflow>Adopting</outflow>
+				<units>Dogs</units>
+			</stock>
+			<stock name="Dogs\non street">
+				<eqn>INIT_Dogs_on_Street</eqn>
+				<inflow>Dog_births</inflow>
+				<outflow>Rescuing</outflow>
+				<outflow>Deaths</outflow>
+				<units>Dogs</units>
+			</stock>
+			<flow name="Rescuing">
+				<eqn>MIN(&quot;Dog-rescuing_capacity&quot;/AT_rescue_dogs,  Dogs_on_street/AT_rescue_dogs)</eqn>
+				<non_negative/>
+				<units>dogs/months</units>
+			</flow>
+			<flow name="Dog births">
+				<eqn>FR_Birth*Dogs_on_street</eqn>
+				<non_negative/>
+				<units>dogs/months</units>
+			</flow>
+			<aux name="FR Birth">
+				<eqn>.02</eqn>
+				<units>1/months</units>
+			</aux>
+			<stock name="Funds">
+				<eqn>INIT_Funds</eqn>
+				<inflow>Revenue</inflow>
+				<outflow>Spending</outflow>
+				<units>$</units>
+			</stock>
+			<flow name="Spending">
+				<eqn>Cost_of_housing_dogs*Dogs_in_shelter+Rescuing*Costs_of_rescuing</eqn>
+				<non_negative/>
+				<units>US Dollars Per Month</units>
+			</flow>
+			<aux name="Cost of\nhousing dogs">
+				<eqn>15</eqn>
+				<units>$/(dogs*months)</units>
+			</aux>
+			<aux name="AT rescue dogs">
+				<eqn>15</eqn>
+				<units>months</units>
+			</aux>
+			<aux name="AT in shelter">
+				<eqn>1.5</eqn>
+				<units>months</units>
+			</aux>
+			<flow name="Adopting">
+				<eqn>Dogs_in_shelter/AT_in_shelter</eqn>
+				<non_negative/>
+				<units>dogs/months</units>
+			</flow>
+			<flow name="Revenue">
+				<eqn>Adopting*&quot;Adoption_fee/dogs&quot;</eqn>
+				<non_negative/>
+				<units>US Dollars Per Month</units>
+			</flow>
+			<aux name="Adoption fee/dogs">
+				<eqn>100</eqn>
+				<units>$/dogs</units>
+			</aux>
+			<aux name="Costs of rescuing">
+				<eqn>50</eqn>
+				<units>$/dogs</units>
+			</aux>
+			<aux name="Dog-rescuing\ncapacity">
+				<eqn>Funds/Costs_of_rescuing</eqn>
+				<units>Dogs</units>
+			</aux>
+			<stock name="Dogs\nin homes">
+				<eqn>0</eqn>
+				<inflow>Adopting</inflow>
+				<outflow>Returning_Dogs</outflow>
+				<outflow>Death</outflow>
+				<units>Dogs</units>
+			</stock>
+			<flow name="Returning Dogs">
+				<eqn>Dogs_in_homes*FR_returning</eqn>
+				<non_negative/>
+				<units>dogs/months</units>
+			</flow>
+			<aux name="FR returning">
+				<eqn>.05</eqn>
+				<units>1/months</units>
+			</aux>
+			<flow name="Death">
+				<eqn>Dogs_in_homes/Lifespan_dogs</eqn>
+				<non_negative/>
+				<units>dogs/months</units>
+			</flow>
+			<aux name="Lifespan dogs">
+				<eqn>11*12</eqn>
+				<units>months</units>
+			</aux>
+			<flow name="Deaths">
+				<eqn>Dogs_on_street/Lifespan_dogs_on_street</eqn>
+				<non_negative/>
+				<units>dogs/months</units>
+			</flow>
+			<aux name="Lifespan dogs on street">
+				<eqn>8*12</eqn>
+				<units>months</units>
+			</aux>
+			<aux name="Reference mode - Dogs on Street">
+				<eqn>TIME</eqn>
+				<gf>
+					<xscale min="1" max="24"/>
+					<yscale min="75" max="150"/>
+					<ypts>150,149.734199659257,149.417909989004,149.041540435718,148.593678700217,148.060744693269,147.426578759347,146.671951682627,145.773981617608,144.70544026447,143.433927251016,141.920887686721,140.12044309913,137.978000304191,135.428596028588,132.39492708965,128.785006403806,124.489373748962,119.377776705371,113.295221134288,106.057271436804,97.4444580870401,87.1956228645937,75</ypts>
+				</gf>
+				<units>dogs</units>
+			</aux>
+			<aux name="Reference mode - Funds">
+				<eqn>TIME</eqn>
+				<gf>
+					<xscale min="1" max="24"/>
+					<yscale min="1000" max="6000"/>
+					<ypts>1000,1129.30733530083,1264.36073801818,1405.41554780993,1552.73845093609,1706.60798447105,1867.31506292165,2035.16352824673,2210.47072431801,2393.56809690855,2584.80182034297,2784.53345199436,2993.14061586526,3211.01771654512,3438.57668489406,3676.24775686285,3924.4802869215,4183.74359763443,4454.52786698843,4737.34505515113,5032.72987241201,5341.2407901362,5663.46109664218,6000</ypts>
+				</gf>
+				<units>dogs</units>
+			</aux>
+			<aux name="INIT Dogs on Street">
+				<eqn>150</eqn>
+				<units>Dogs</units>
+			</aux>
+			<aux name="INIT Funds">
+				<eqn>1000</eqn>
+				<units>$</units>
+			</aux>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="1"/>
+						<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF7F00" thickness="1"/>
+						<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="ending" report_flows="summed" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="#66CC66" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="#E95F74" background="silver"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD"/>
+				<isee:shape color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid" opacity="1" transparent_background="true"/>
+				<isee:selector color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:iframe color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid"/>
+				<isee:financial_table color="black" background="#E0E0E0" text_align="right" font_size="12pt" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="true" background="white" page_width="768" page_height="588" isee:page_cols="2" isee:page_rows="2" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_color="blue" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="45" height="35"/>
+					</stock>
+					<flow color="blue" background="white" font_color="blue" font_size="9pt" label_side="bottom"/>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" font_size="9pt" label_side="bottom"/>
+					<module color="blue" background="white" font_color="blue" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_color="blue" font_size="9pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_size="9pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="1"/>
+							<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF7F00" thickness="1"/>
+							<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#C8C8C8" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="ending" report_flows="summed" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock label_side="center" x="337.5" y="340.5" width="53" height="44" name="Dogs\nin shelter"/>
+				<stock label_side="center" x="204.5" y="340.5" width="53" height="44" name="Dogs\non street"/>
+				<flow x="291.5" y="358" name="Rescuing">
+					<pts>
+						<pt x="257.5" y="358"/>
+						<pt x="337.5" y="358"/>
+					</pts>
+				</flow>
+				<flow x="169.75" y="358" name="Dog births">
+					<pts>
+						<pt x="135" y="358"/>
+						<pt x="204.5" y="358"/>
+					</pts>
+				</flow>
+				<aux x="110" y="314" name="FR Birth"/>
+				<connector uid="1" angle="351.87">
+					<from>FR_Birth</from>
+					<to>Dog_births</to>
+				</connector>
+				<connector uid="2" angle="84.2486">
+					<from>Dogs_on_street</from>
+					<to>Dog_births</to>
+				</connector>
+				<stock x="336" y="158" name="Funds"/>
+				<connector uid="3" angle="181.332">
+					<from>Funds</from>
+					<to>&quot;Dog-rescuing_capacity&quot;</to>
+				</connector>
+				<flow x="337" y="202.75" name="Spending">
+					<pts>
+						<pt x="337" y="175.5"/>
+						<pt x="337" y="251"/>
+					</pts>
+				</flow>
+				<connector uid="4" angle="47.07">
+					<from>Dogs_in_shelter</from>
+					<to>Spending</to>
+				</connector>
+				<aux x="428.5" y="202.75" name="Cost of\nhousing dogs"/>
+				<connector uid="5" angle="142.524">
+					<from>Cost_of_housing_dogs</from>
+					<to>Spending</to>
+				</connector>
+				<aux x="295.5" y="424" name="AT rescue dogs"/>
+				<connector uid="6" angle="93.4682">
+					<from>AT_rescue_dogs</from>
+					<to>Rescuing</to>
+				</connector>
+				<aux x="430" y="413.75" name="AT in shelter"/>
+				<flow x="430" y="360" name="Adopting">
+					<pts>
+						<pt x="390.5" y="360"/>
+						<pt x="481.5" y="360"/>
+					</pts>
+				</flow>
+				<connector uid="7" angle="90">
+					<from>AT_in_shelter</from>
+					<to>Adopting</to>
+				</connector>
+				<connector uid="8" angle="26.0954">
+					<from>Dogs_in_shelter</from>
+					<to>Adopting</to>
+				</connector>
+				<flow x="416.25" y="160" name="Revenue">
+					<pts>
+						<pt x="474" y="160"/>
+						<pt x="358.5" y="160"/>
+					</pts>
+				</flow>
+				<connector uid="9" angle="27.3835">
+					<from>Adopting</from>
+					<to>Revenue</to>
+				</connector>
+				<aux x="467.5" y="103" name="Adoption fee/dogs"/>
+				<connector uid="10" angle="228.041">
+					<from>&quot;Adoption_fee/dogs&quot;</from>
+					<to>Revenue</to>
+				</connector>
+				<aux x="277.5" y="209" name="Costs of rescuing"/>
+				<connector uid="11" angle="5.99647">
+					<from>Costs_of_rescuing</from>
+					<to>Spending</to>
+				</connector>
+				<connector uid="12" angle="20.4099">
+					<from>Rescuing</from>
+					<to>Spending</to>
+				</connector>
+				<aux x="239.5" y="275" name="Dog-rescuing\ncapacity"/>
+				<connector uid="13" angle="209.604">
+					<from>Costs_of_rescuing</from>
+					<to>&quot;Dog-rescuing_capacity&quot;</to>
+				</connector>
+				<connector uid="14" angle="272.203">
+					<from>&quot;Dog-rescuing_capacity&quot;</from>
+					<to>Rescuing</to>
+				</connector>
+				<connector uid="15" angle="318.731">
+					<from>Dogs_on_street</from>
+					<to>Rescuing</to>
+				</connector>
+				<stock label_side="center" x="481.5" y="340.5" width="54" height="44" name="Dogs\nin homes"/>
+				<flow label_side="bottom" x="433.5" y="460" name="Returning Dogs">
+					<pts>
+						<pt x="508" y="384.5"/>
+						<pt x="508" y="460"/>
+						<pt x="359" y="460"/>
+						<pt x="359" y="384.5"/>
+					</pts>
+				</flow>
+				<aux x="476.5" y="526" name="FR returning"/>
+				<connector uid="16" angle="123.085">
+					<from>FR_returning</from>
+					<to>Returning_Dogs</to>
+				</connector>
+				<connector uid="17" angle="277.125">
+					<from>Dogs_in_homes</from>
+					<to>Returning_Dogs</to>
+				</connector>
+				<flow x="582.25" y="358" name="Death">
+					<pts>
+						<pt x="535.5" y="358"/>
+						<pt x="653" y="358"/>
+					</pts>
+				</flow>
+				<connector uid="18" angle="29.4759">
+					<from>Dogs_in_homes</from>
+					<to>Death</to>
+				</connector>
+				<aux x="624" y="421" name="Lifespan dogs"/>
+				<connector uid="19" angle="94.7636">
+					<from>Lifespan_dogs</from>
+					<to>Death</to>
+				</connector>
+				<flow x="232" y="420.25" name="Deaths">
+					<pts>
+						<pt x="232" y="384.5"/>
+						<pt x="232" y="477"/>
+					</pts>
+				</flow>
+				<aux x="154.75" y="460" name="Lifespan dogs on street"/>
+				<connector uid="20" angle="50.1944">
+					<from>Lifespan_dogs_on_street</from>
+					<to>Deaths</to>
+				</connector>
+				<connector uid="21" angle="226.397">
+					<from>Dogs_on_street</from>
+					<to>Deaths</to>
+				</connector>
+				<isee:loop_indicator color="#999999" font_color="#999999" text="R" orientation="counter_clockwise" uid="22" x="437.5" y="247" width="30" height="30"/>
+				<isee:loop_indicator color="#999999" font_color="#999999" text="B" orientation="counter_clockwise" uid="23" x="283.5" y="260" width="30" height="30"/>
+				<isee:loop_indicator color="#999999" font_color="#999999" text="B" orientation="counter_clockwise" uid="24" x="367.5" y="266" width="30" height="30"/>
+				<isee:loop_indicator color="#999999" font_color="#999999" text="R" orientation="counter_clockwise" uid="25" x="184.75" y="310.5" width="30" height="30"/>
+				<stacked_container uid="26" x="963.5" y="416">
+					<graph width="350" height="250" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="#FC0107" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Funds"/>
+						</plot>
+						<plot color="#7F7F7F" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="3" index="1" show_y_axis="true">
+							<entity name='"Reference_mode_-_Funds"'/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux label_side="right" x="617.25" y="52" name="Reference mode - Dogs on Street"/>
+				<stacked_container uid="27" x="963.5" y="145">
+					<graph width="350" height="250" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="2" index="0" show_y_axis="true">
+							<entity name="Dogs_on_street"/>
+						</plot>
+						<plot color="#4C4C4C" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="3" index="1" show_y_axis="true">
+							<entity name='"Reference_mode_-_Dogs_on_Street"'/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux label_side="right" x="617.25" y="81" name="Reference mode - Funds"/>
+				<text_box font_size="14pt" uid="28" x="34.625" y="20" width="504.75" height="58">Demo: Behavioral Reproduction
+Designing Sustainable Policies and Programs; A System Dynamics Approach
+Ellis Ballard</text_box>
+				<aux x="617.25" y="137" name="INIT Dogs on Street"/>
+				<aux x="617.25" y="195" name="INIT Funds"/>
+			</view>
+		</views>
+	</model>
+</xmile>
+

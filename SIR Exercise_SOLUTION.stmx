@@ -1,0 +1,1037 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<smile version="1.0" namespace="std, isee"/>
+		<name>SIR Exercise_SOLUTION</name>
+		<uuid>79622243-46f6-442a-83dc-cf50199f06b0</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="2.0.1" isee:build_number="2228" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<sim_specs isee:sim_duration="1.5" isee:simulation_delay="0.0428571" isee:restore_on_start="false" method="Euler" time_units="weeks" isee:instantaneous_flows="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>1</start>
+		<stop>36</stop>
+		<dt reciprocal="true">4</dt>
+	</sim_specs>
+	<isee:prefs show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rerun_on_structure_change="false" saved_runs="5" keep="false" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<default_format/>
+	<model_units>
+		<unit name="People">
+			<eqn/>
+			<alias>person</alias>
+			<alias>persons</alias>
+		</unit>
+		<unit name="Dimensionless">
+			<eqn>1</eqn>
+			<alias>dmnl</alias>
+			<alias>unitless</alias>
+			<alias>fraction</alias>
+		</unit>
+		<unit name="Weeks">
+			<eqn/>
+			<alias>wk</alias>
+			<alias>week</alias>
+		</unit>
+		<unit name="Per Week">
+			<eqn>1/Weeks</eqn>
+		</unit>
+	</model_units>
+	<model>
+		<variables>
+			<stock name="Susceptible">
+				<eqn>INIT_Susceptible</eqn>
+				<inflow>Becoming_susceptible</inflow>
+				<outflow>Infecting</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<stock name="Infected">
+				<eqn>INIT_Infected</eqn>
+				<inflow>Infecting</inflow>
+				<outflow>Recovering</outflow>
+				<outflow>Dying</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<flow name="Infecting">
+				<eqn>Infectioiusness_of_virus*Rate_of_contact_between_susceptible_and_infectious</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<aux name="INIT\nSusceptible">
+				<eqn>15000</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="INIT\nInfected">
+				<eqn>50</eqn>
+				<units>people</units>
+			</aux>
+			<flow name="Recovering">
+				<eqn>Infected/AT_infectious</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Recovered">
+				<eqn>INIT_recovered</eqn>
+				<inflow>Recovering</inflow>
+				<outflow>Becoming_susceptible</outflow>
+				<units>people</units>
+			</stock>
+			<aux name="INIT\nrecovered">
+				<eqn>0</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="Rate of contact between susceptible and infectious">
+				<eqn>Susceptible_as_fraction_of_total_population*Social_contacts_of_infected</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Social contacts of infected">
+				<eqn>Infected*Sociability_of_infected</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Sociability of infected">
+				<eqn>40</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<aux name="Susceptible as fraction of total population">
+				<eqn>Susceptible/Total_population</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Total population">
+				<eqn>20000</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="Infectioiusness\nof virus">
+				<eqn>.05</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="AT infectious">
+				<eqn>2</eqn>
+				<units>weeks</units>
+			</aux>
+			<flow name="Dying">
+				<eqn>Infected*FR_mortality</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Fatal\nCases">
+				<eqn>INIT_fatal_cases</eqn>
+				<inflow>Dying</inflow>
+				<units>people</units>
+			</stock>
+			<aux name="FR mortality">
+				<eqn>.05</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<flow name="Becoming susceptible">
+				<eqn>Recovered*FR_becomign_susceptible</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<aux name="FR becomign susceptible">
+				<eqn>.05</eqn>
+				<units>Per Week</units>
+			</aux>
+			<aux name="INIT fatal cases">
+				<eqn>0</eqn>
+				<units>people</units>
+			</aux>
+			<stock name="Susceptible 2">
+				<eqn>INIT_Susceptible</eqn>
+				<inflow>Becoming_susceptible_2</inflow>
+				<outflow>Infecting_2</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<stock name="Infected 2">
+				<eqn>50</eqn>
+				<inflow>Infecting_2</inflow>
+				<outflow>Recovering_2</outflow>
+				<outflow>Dying_2</outflow>
+				<outflow>Quarantining</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<flow name="Infecting 2">
+				<eqn>Rate_of_contact_between_susceptible_and_infectious_2*Infectioiusness_of_virus_2</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<flow name="Recovering 2">
+				<eqn>Infected_2/AT_infectious_2*(1-Proportion_quarantining)</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Recovered 2">
+				<eqn>INIT_recovered</eqn>
+				<inflow>Recovering_2</inflow>
+				<inflow>Recoering_in_quarantine</inflow>
+				<outflow>Becoming_susceptible_2</outflow>
+				<units>people</units>
+			</stock>
+			<aux name="Rate of contact between susceptible and infectious 2">
+				<eqn>Susceptible_as_fraction_of_total_population_2*Social_contacts_of_infected_2</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Social contacts of infected 2">
+				<eqn>(Infected_2)*Sociability_of_infected_2</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Sociability of infected 2">
+				<eqn>40</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<aux name="Susceptible as fraction of total population 2">
+				<eqn>Susceptible_2/Total_population_2</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Total population 2">
+				<eqn>20000</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="Infectioiusness\nof virus 2">
+				<eqn>.05</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="AT infectious 2">
+				<eqn>2</eqn>
+				<units>weeks</units>
+			</aux>
+			<flow name="Dying 2">
+				<eqn>Infected_2*FR_mortality_2</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Fatal\nCases 2">
+				<eqn>INIT_fatal_cases</eqn>
+				<inflow>Dying_2</inflow>
+				<units>people</units>
+			</stock>
+			<aux name="FR mortality 2">
+				<eqn>.05</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<flow name="Becoming susceptible 2">
+				<eqn>Recovered_2*FR_becomign_susceptible_2</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<aux name="FR becomign susceptible 2">
+				<eqn>.05</eqn>
+				<units>Per Week</units>
+			</aux>
+			<stock name="Quarantined">
+				<eqn>0</eqn>
+				<inflow>Quarantining</inflow>
+				<outflow>Recoering_in_quarantine</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<flow name="Recoering\nin quarantine">
+				<eqn>Quarantined/AT_recover_from_quarantine</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<aux name="AT recover\nfrom quarantine">
+				<eqn>AT_infectious_2-AT_to_quarantine</eqn>
+				<units>weeks</units>
+			</aux>
+			<flow name="Quarantining">
+				<eqn>Infected_2/AT_to_quarantine*Proportion_quarantining</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<aux name="AT to quarantine">
+				<eqn>.5</eqn>
+				<units>weeks</units>
+			</aux>
+			<aux name="Proportion quarantining">
+				<eqn>.25</eqn>
+				<units>dmnl</units>
+			</aux>
+			<stock name="Susceptible 3">
+				<eqn>INIT_Susceptible</eqn>
+				<outflow>Infecting_3</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<stock name="Infected 3">
+				<eqn>INIT_Infected</eqn>
+				<inflow>Infecting_3</inflow>
+				<outflow>Recovering_3</outflow>
+				<outflow>Dying_3</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<flow name="Infecting 3">
+				<eqn>Infectioiusness_of_virus_3*Rate_of_contact_between_susceptible_and_infectious_3</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<flow name="Recovering 3">
+				<eqn>Infected_3/AT_infectious_3</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Recovered 3">
+				<eqn>INIT_recovered</eqn>
+				<inflow>Recovering_3</inflow>
+				<units>people</units>
+			</stock>
+			<aux name="Rate of contact between susceptible and infectious 3">
+				<eqn>Susceptible_as_fraction_of_total_population_3*Social_contacts_of_infected_3</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Social contacts of infected 3">
+				<eqn>Infected_3*Sociability_of_infected_3</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Sociability of infected 3">
+				<eqn>40</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<aux name="Susceptible as fraction of total population 3">
+				<eqn>Susceptible_3/Total_population_3</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Total population 3">
+				<eqn>20000</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="Infectioiusness\nof virus 3">
+				<eqn>.05</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="AT infectious 3">
+				<eqn>2</eqn>
+				<units>weeks</units>
+			</aux>
+			<flow name="Dying 3">
+				<eqn>Infected_3*FR_mortality_3</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Fatal\nCases 3">
+				<eqn>INIT_fatal_cases</eqn>
+				<inflow>Dying_3</inflow>
+				<units>people</units>
+			</stock>
+			<aux name="FR mortality 3">
+				<eqn>.05</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<stock name="Susceptible 4">
+				<eqn>INIT_Susceptible</eqn>
+				<outflow>Infecting_4</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<stock name="Infected 4">
+				<eqn>INIT_Infected</eqn>
+				<inflow>Infecting_4</inflow>
+				<outflow>Recovering_4</outflow>
+				<non_negative/>
+				<units>people</units>
+			</stock>
+			<flow name="Infecting 4">
+				<eqn>Infectioiusness_of_virus_4*Rate_of_contact_between_susceptible_and_infectious_4</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<flow name="Recovering 4">
+				<eqn>Infected_4/AT_infectious_4</eqn>
+				<non_negative/>
+				<units>people/weeks</units>
+			</flow>
+			<stock name="Recovered 4">
+				<eqn>INIT_recovered</eqn>
+				<inflow>Recovering_4</inflow>
+				<units>people</units>
+			</stock>
+			<aux name="Rate of contact between susceptible and infectious 4">
+				<eqn>Susceptible_as_fraction_of_total_population_4*Social_contacts_of_infected_4</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Social contacts of infected 4">
+				<eqn>Infected_4*Sociability_of_infected_4</eqn>
+				<units>people/weeks</units>
+			</aux>
+			<aux name="Sociability of infected 4">
+				<eqn>40</eqn>
+				<units>people/people/weeks</units>
+			</aux>
+			<aux name="Susceptible as fraction of total population 4">
+				<eqn>Susceptible_4/Total_population_4</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="Total population 4">
+				<eqn>20000</eqn>
+				<units>people</units>
+			</aux>
+			<aux name="Infectioiusness\nof virus 4">
+				<eqn>.05</eqn>
+				<units>dmnl</units>
+			</aux>
+			<aux name="AT infectious 4">
+				<eqn>2</eqn>
+				<units>weeks</units>
+			</aux>
+			<group name="Class 7 Activity - Structure 3" run="false">
+				<entity name="Sociability_of_infected"/>
+				<entity name="Total_population"/>
+				<entity name="Susceptible"/>
+				<entity name="Infected"/>
+				<entity name="Fatal_Cases"/>
+				<entity name="Rate_of_contact_between_susceptible_and_infectious"/>
+				<entity name="Social_contacts_of_infected"/>
+				<entity name="Susceptible_as_fraction_of_total_population"/>
+				<entity name="Infectioiusness_of_virus"/>
+				<entity name="AT_infectious"/>
+				<entity name="FR_mortality"/>
+				<entity name="Infecting"/>
+				<entity name="Recovering"/>
+				<entity name="Dying"/>
+				<entity name="Becoming_susceptible"/>
+				<entity name="Recovered"/>
+				<entity name="FR_becomign_susceptible"/>
+			</group>
+			<group name="Class 7 Activity: Challenge" run="false">
+				<entity name="Sociability_of_infected_2"/>
+				<entity name="Total_population_2"/>
+				<entity name="Quarantining"/>
+				<entity name="Quarantined"/>
+				<entity name="Recoering_in_quarantine"/>
+				<entity name="Susceptible_2"/>
+				<entity name="Infected_2"/>
+				<entity name="Fatal_Cases_2"/>
+				<entity name="Rate_of_contact_between_susceptible_and_infectious_2"/>
+				<entity name="Social_contacts_of_infected_2"/>
+				<entity name="Susceptible_as_fraction_of_total_population_2"/>
+				<entity name="Infectioiusness_of_virus_2"/>
+				<entity name="Infecting_2"/>
+				<entity name="Dying_2"/>
+				<entity name="Becoming_susceptible_2"/>
+				<entity name="Recovered_2"/>
+				<entity name="AT_infectious_2"/>
+				<entity name="FR_mortality_2"/>
+				<entity name="AT_recover_from_quarantine"/>
+				<entity name="AT_to_quarantine"/>
+				<entity name="Proportion_quarantining"/>
+				<entity name="Recovering_2"/>
+				<entity name="FR_becomign_susceptible_2"/>
+			</group>
+			<group name="Class 7 Activity - Structure 2" run="false">
+				<entity name="Susceptible_3"/>
+				<entity name="Social_contacts_of_infected_3"/>
+				<entity name="Susceptible_as_fraction_of_total_population_3"/>
+				<entity name="Total_population_3"/>
+				<entity name="Infected_3"/>
+				<entity name="Infecting_3"/>
+				<entity name="Dying_3"/>
+				<entity name="Infectioiusness_of_virus_3"/>
+				<entity name="Rate_of_contact_between_susceptible_and_infectious_3"/>
+				<entity name="Sociability_of_infected_3"/>
+				<entity name="Recovered_3"/>
+				<entity name="Recovering_3"/>
+				<entity name="AT_infectious_3"/>
+				<entity name="Fatal_Cases_3"/>
+				<entity name="FR_mortality_3"/>
+			</group>
+			<group name="Class 7 Activity - Structure 1" run="false">
+				<entity name="Total_population_4"/>
+				<entity name="Susceptible_as_fraction_of_total_population_4"/>
+				<entity name="Sociability_of_infected_4"/>
+				<entity name="Susceptible_4"/>
+				<entity name="Infected_4"/>
+				<entity name="Recovering_4"/>
+				<entity name="Infecting_4"/>
+				<entity name="AT_infectious_4"/>
+				<entity name="Infectioiusness_of_virus_4"/>
+				<entity name="Rate_of_contact_between_susceptible_and_infectious_4"/>
+				<entity name="Social_contacts_of_infected_4"/>
+				<entity name="Recovered_4"/>
+				<entity name="INIT_Susceptible"/>
+				<entity name="INIT_Infected"/>
+				<entity name="INIT_recovered"/>
+				<entity name="INIT_fatal_cases"/>
+			</group>
+		</variables>
+		<views>
+			<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+				<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+				<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+					<isee:series_styles>
+						<isee:series_style color="blue" thickness="1"/>
+						<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF7F00" thickness="1"/>
+						<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#FF007F" thickness="1"/>
+						<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+						<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+						<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+						<isee:series_style color="#C8C8C8" thickness="1"/>
+					</isee:series_styles>
+				</graph>
+				<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="ending" report_flows="summed" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				<button color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595"/>
+				<isee:annotation color="black" background="#E0E0E0" font_size="12pt" border_width="thin" border_style="solid" transparent="false" corner_radius="0" isee:flat="false" icon_side="top" isee:highlight_on_hover="false" isee:highlight_color="#959595" popup_corner_radius="0" popup_background_color="#FFFECF"/>
+				<slider color="#66CC66" background="#E0E0E0" font_size="12pt" num_ticks="3" label_side="top" wrap_title="true" vertical="false" isee:fancy_appearance="false" isee:show_hover_tip="when_deciding" input_expands="true" input_width="100"/>
+				<isee:sim_speed_slider color="black" background="white"/>
+				<isee:time_slider color="#E95F74" background="silver"/>
+				<isee:pie_input color="black" background="white" font_size="12pt" legend_position="bottom" isee:transparent="false"/>
+				<knob color="#66CC66" background="#E0E0E0" font_size="12pt" label_side="bottom" wrap_title="true"/>
+				<numeric_input color="black" background="#E0E0E0" font_size="12pt" label_side="left" wrap_title="true" input_expands="false" input_width="100"/>
+				<switch color="black" background="#E0E0E0" font_size="12pt" label_side="top" wrap_title="true" isee:appearance="switch" isee:on_color="green"/>
+				<options color="black" background="white" appearance="radio-buttons" arrangement="vertical"/>
+				<graphical_input color="black" background="#E0E0E0" font_size="12pt" isee:show_hover_tip="true"/>
+				<group_input color="black" background="#E0E0E0" font_size="12pt"/>
+				<lamp color="black" background="white" font_size="9pt"/>
+				<gauge color="black" background="white" font_size="9pt" needle_color="#F09F72" bar_color="#EEEEEE" bar_progress_color="black" appearance="radial" num_major_ticks="11" num_minor_ticks="11" show_numeric_value="true"/>
+				<isee:spatial_map color="black" background="white" font_size="12pt"/>
+				<isee:animation_object color="black" background="white" font_size="12pt"/>
+				<isee:navigation_widget color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_color="#999999" border_width="thin" border_style="solid" item_spacing="6" appearance="tabs" corner_radius="4" selected_item_color="black" selected_item_background="white" item_background="#DDDDDD"/>
+				<isee:shape color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid" opacity="1" transparent_background="true"/>
+				<isee:selector color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+				<isee:iframe color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt" border_width="thin" border_style="solid"/>
+				<isee:financial_table color="black" background="#E0E0E0" text_align="right" font_size="12pt" auto_fit="true" first_column_width="250" other_column_width="100" header_font_style="normal" header_font_weight="bold" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="14pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+			</style>
+			<view isee:show_pages="true" background="white" page_width="768" page_height="588" isee:page_cols="3" isee:page_rows="3" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style color="black" background="white" font_style="normal" font_weight="normal" text_decoration="none" text_align="center" vertical_text_align="center" font_color="black" font_family="Arial" font_size="10pt" padding="2" border_color="black" border_width="thin" border_style="none">
+					<stock color="blue" background="white" font_color="blue" font_family="Avenir Next" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="45" height="35"/>
+					</stock>
+					<flow color="blue" background="white" font_color="blue" font_family="Avenir Next" font_size="9pt" label_side="bottom"/>
+					<isee:placeholder color="#228B22" background="white" font_color="#228B22" font_family="Avenir Next" font_size="9pt" label_side="bottom"/>
+					<module color="blue" background="white" font_color="blue" font_family="Avenir Next" font_size="9pt" label_side="top">
+						<shape type="rectangle" width="55" height="45"/>
+					</module>
+					<aux color="blue" background="white" font_color="blue" font_family="Avenir Next" font_size="9pt" label_side="bottom">
+						<shape type="circle" radius="18"/>
+					</aux>
+					<group color="red" background="white" font_color="red" font_family="Avenir Next" font_size="9pt"/>
+					<connector color="#FF007F" background="white" font_color="#FF007F" font_size="9pt" isee:thickness="1"/>
+					<text_box color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<isee:loop_indicator color="black" background="white" text_align="left" vertical_text_align="top" font_size="12pt"/>
+					<numeric_display color="blue" background="white" font_size="9pt" isee:transparent="false"/>
+					<graph color="black" background="white" font_size="12pt" axis_color="#666666" grid_color="#C8C8C8" isee:graph_area_color="white" legend_position="bottom" isee:transparent="false" isee:hide_border="false" axis_title_font_style="normal" axis_title_font_weight="normal" axis_title_text_decoration="none" axis_title_text_align="center" axis_title_vertical_text_align="center" axis_title_font_color="black" axis_title_font_family="Arial" axis_title_font_size="12pt" axis_title_text_padding="2" axis_title_text_border_color="black" axis_title_text_border_width="thin" axis_title_text_border_style="none" axis_label_font_style="normal" axis_label_font_weight="normal" axis_label_text_decoration="none" axis_label_text_align="center" axis_label_vertical_text_align="center" axis_label_font_color="black" axis_label_font_family="Arial" axis_label_font_size="9pt" axis_label_text_padding="2" axis_label_text_border_color="black" axis_label_text_border_width="thin" axis_label_text_border_style="none">
+						<isee:series_styles>
+							<isee:series_style color="blue" thickness="1"/>
+							<isee:series_style color="red" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="fuchsia" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="#008F44" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF7F00" thickness="1"/>
+							<isee:series_style color="#7F00FF" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#0CA0FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="lime" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#FF007F" thickness="1"/>
+							<isee:series_style color="aqua" thickness="1" pen_style="dot_dashed"/>
+							<isee:series_style color="#F586FF" thickness="1" pen_style="dotted"/>
+							<isee:series_style color="black" thickness="1" pen_style="dashed"/>
+							<isee:series_style color="#C8C8C8" thickness="1"/>
+						</isee:series_styles>
+					</graph>
+					<table color="black" background="#E0E0E0" text_align="right" font_size="12pt" orientation="vertical" wrap_text="false" isee:auto_fit="true" isee:use_alternate_row_colors="false" isee:unlimited_table_length="false" blank_column_width="80" column_width="160" interval="1" report_balances="ending" report_flows="summed" header_font_style="normal" header_font_weight="normal" header_text_decoration="none" header_text_align="center" header_vertical_text_align="center" header_font_color="black" header_font_family="Arial" header_font_size="12pt" header_text_padding="2" header_text_border_color="black" header_text_border_width="thin" header_text_border_style="none"/>
+				</style>
+				<stock label_side="center" x="79" y="820" width="67.7778" height="41.1111" name="Susceptible"/>
+				<stock label_side="center" x="244.223" y="811" width="62.5" height="39.1667" name="Infected"/>
+				<flow label_side="top" x="189.5" y="835.083" name="Infecting">
+					<pts>
+						<pt x="146.778" y="835.083"/>
+						<pt x="244.223" y="835.083"/>
+					</pts>
+				</flow>
+				<aux x="489.75" y="427" name="INIT\nSusceptible"/>
+				<aux x="489.75" y="483.5" name="INIT\nInfected"/>
+				<stacked_container uid="1" x="470" y="813.667" width="274" height="237">
+					<graph width="274" height="237" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Fatal_Cases"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<flow label_side="top" x="333.112" y="831" name="Recovering">
+					<pts>
+						<pt x="306.723" y="831"/>
+						<pt x="371.5" y="831"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="371.5" y="810.5" width="60" height="41" name="Recovered"/>
+				<aux x="431" y="427" name="INIT\nrecovered"/>
+				<stacked_container uid="2" x="471" y="604" width="272" height="201">
+					<graph width="272" height="201" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Infected"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Susceptible"/>
+						</plot>
+						<plot color="fuchsia" pen_style="dotted" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="Recovered"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux x="189.5" y="742" name="Rate of contact between susceptible and infectious"/>
+				<aux x="303" y="729" name="Social contacts of infected"/>
+				<connector uid="3" angle="48.0097">
+					<from>Infected</from>
+					<to>Social_contacts_of_infected</to>
+				</connector>
+				<aux x="328.681" y="652" name="Sociability of infected"/>
+				<connector uid="4" angle="290.577">
+					<from>Sociability_of_infected</from>
+					<to>Social_contacts_of_infected</to>
+				</connector>
+				<connector uid="5" angle="147.095">
+					<from>Social_contacts_of_infected</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious</to>
+				</connector>
+				<aux x="70" y="736" name="Susceptible as fraction of total population"/>
+				<connector uid="6" angle="133.466">
+					<from>Susceptible</from>
+					<to>Susceptible_as_fraction_of_total_population</to>
+				</connector>
+				<aux x="38" y="670" name="Total population"/>
+				<connector uid="7" angle="257.905">
+					<from>Total_population</from>
+					<to>Susceptible_as_fraction_of_total_population</to>
+				</connector>
+				<connector uid="8" angle="41.9872">
+					<from>Susceptible_as_fraction_of_total_population</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious</to>
+				</connector>
+				<aux label_side="bottom" x="181.5" y="875" width="17" height="17" name="Infectioiusness\nof virus"/>
+				<connector uid="9" angle="90.5912">
+					<from>Infectioiusness_of_virus</from>
+					<to>Infecting</to>
+				</connector>
+				<aux x="345" y="901" name="AT infectious"/>
+				<connector uid="10" angle="49.3987">
+					<from>AT_infectious</from>
+					<to>Recovering</to>
+				</connector>
+				<connector uid="11" angle="28.3574">
+					<from>Infected</from>
+					<to>Recovering</to>
+				</connector>
+				<flow x="271" y="902.833" name="Dying">
+					<pts>
+						<pt x="271" y="850.167"/>
+						<pt x="271" y="967.5"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="241.5" y="967.5" width="59" height="36" name="Fatal\nCases"/>
+				<aux x="207.5" y="949" name="FR mortality"/>
+				<connector uid="12" angle="59.8586">
+					<from>FR_mortality</from>
+					<to>Dying</to>
+				</connector>
+				<connector uid="13" angle="234.117">
+					<from>Infected</from>
+					<to>Dying</to>
+				</connector>
+				<flow x="253.5" y="1031" name="Becoming susceptible">
+					<pts>
+						<pt x="402" y="851.5"/>
+						<pt x="402" y="1031"/>
+						<pt x="105" y="1031"/>
+						<pt x="105" y="861.111"/>
+					</pts>
+				</flow>
+				<aux x="346.681" y="1070" name="FR becomign susceptible"/>
+				<connector uid="14" angle="180">
+					<from>FR_becomign_susceptible</from>
+					<to>Becoming_susceptible</to>
+				</connector>
+				<connector uid="15" angle="271.302">
+					<from>Recovered</from>
+					<to>Becoming_susceptible</to>
+				</connector>
+				<aux x="431" y="483.5" name="INIT fatal cases"/>
+				<text_box uid="16" x="19.1594" y="613" width="187.459" height="23">Class 7 Activity - Structure 3</text_box>
+				<stock label_side="center" x="847" y="841" width="67.7778" height="41.1111" name="Susceptible 2"/>
+				<stock label_side="center" x="1004.22" y="838" width="62.5" height="39.1667" name="Infected 2"/>
+				<flow label_side="top" x="953.499" y="856.08" name="Infecting 2">
+					<pts>
+						<pt x="914.778" y="856.08"/>
+						<pt x="1004.22" y="856.08"/>
+					</pts>
+				</flow>
+				<stacked_container uid="17" x="1313" y="820.67" width="218" height="183">
+					<graph width="218" height="183" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Fatal_Cases_2"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<flow label_side="top" x="1146.61" y="859" name="Recovering 2">
+					<pts>
+						<pt x="1066.72" y="859"/>
+						<pt x="1238.5" y="859"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="1238.5" y="837.08" width="60" height="41" name="Recovered 2"/>
+				<stacked_container uid="18" x="1311" y="603" width="222" height="202">
+					<graph width="222" height="202" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Infected_2"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Susceptible_2"/>
+						</plot>
+						<plot color="fuchsia" pen_style="dotted" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="Recovered_2"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<aux x="944.499" y="768" name="Rate of contact between susceptible and infectious 2"/>
+				<aux x="1022" y="756" name="Social contacts of infected 2"/>
+				<connector uid="19" angle="88.3664">
+					<from>Infected_2</from>
+					<to>Social_contacts_of_infected_2</to>
+				</connector>
+				<aux x="962.499" y="673" name="Sociability of infected 2"/>
+				<connector uid="20" angle="331.699">
+					<from>Sociability_of_infected_2</from>
+					<to>Social_contacts_of_infected_2</to>
+				</connector>
+				<connector uid="21" angle="156.801">
+					<from>Social_contacts_of_infected_2</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious_2</to>
+				</connector>
+				<aux x="838" y="757" name="Susceptible as fraction of total population 2"/>
+				<connector uid="22" angle="133.466">
+					<from>Susceptible_2</from>
+					<to>Susceptible_as_fraction_of_total_population_2</to>
+				</connector>
+				<aux x="806" y="691" name="Total population 2"/>
+				<connector uid="23" angle="257.905">
+					<from>Total_population_2</from>
+					<to>Susceptible_as_fraction_of_total_population_2</to>
+				</connector>
+				<connector uid="24" angle="30.9638">
+					<from>Susceptible_as_fraction_of_total_population_2</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious_2</to>
+				</connector>
+				<aux label_side="bottom" x="953.499" y="918" name="Infectioiusness\nof virus 2"/>
+				<connector uid="25" angle="85.4827">
+					<from>Infectioiusness_of_virus_2</from>
+					<to>Infecting_2</to>
+				</connector>
+				<aux x="1202" y="822" name="AT infectious 2"/>
+				<connector uid="26" angle="242.103">
+					<from>AT_infectious_2</from>
+					<to>Recovering_2</to>
+				</connector>
+				<connector uid="27" angle="28.3574">
+					<from>Infected_2</from>
+					<to>Recovering_2</to>
+				</connector>
+				<flow x="1031" y="929.833" name="Dying 2">
+					<pts>
+						<pt x="1031" y="877.167"/>
+						<pt x="1031" y="994.5"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="1001.5" y="994.5" width="59" height="36" name="Fatal\nCases 2"/>
+				<aux x="1099.5" y="954" name="FR mortality 2"/>
+				<connector uid="28" angle="160.567">
+					<from>FR_mortality_2</from>
+					<to>Dying_2</to>
+				</connector>
+				<connector uid="29" angle="234.117">
+					<from>Infected_2</from>
+					<to>Dying_2</to>
+				</connector>
+				<flow x="1071" y="1082" name="Becoming susceptible 2">
+					<pts>
+						<pt x="1269" y="878.08"/>
+						<pt x="1269" y="1082"/>
+						<pt x="873" y="1082"/>
+						<pt x="873" y="882.111"/>
+					</pts>
+				</flow>
+				<aux x="1149" y="1133" name="FR becomign susceptible 2"/>
+				<connector uid="30" angle="180">
+					<from>FR_becomign_susceptible_2</from>
+					<to>Becoming_susceptible_2</to>
+				</connector>
+				<connector uid="31" angle="271.302">
+					<from>Recovered_2</from>
+					<to>Becoming_susceptible_2</to>
+				</connector>
+				<text_box uid="32" x="787.159" y="617" width="187.459" height="23">Class 7 Activity: CHALLENGE</text_box>
+				<stock label_side="center" x="1140.5" y="680.5" width="60" height="39" name="Quarantined"/>
+				<flow x="1235.75" y="700" name="Recoering\nin quarantine">
+					<pts>
+						<pt x="1200.5" y="700"/>
+						<pt x="1271" y="700"/>
+						<pt x="1271" y="837.08"/>
+					</pts>
+				</flow>
+				<aux x="1237.75" y="768" name="AT recover\nfrom quarantine"/>
+				<connector uid="33" angle="91.6847">
+					<from>AT_recover_from_quarantine</from>
+					<to>Recoering_in_quarantine</to>
+				</connector>
+				<connector uid="34" angle="39.3405">
+					<from>Quarantined</from>
+					<to>Recoering_in_quarantine</to>
+				</connector>
+				<flow x="1087.25" y="700" name="Quarantining">
+					<pts>
+						<pt x="1046" y="838"/>
+						<pt x="1046" y="700"/>
+						<pt x="1140.5" y="700"/>
+					</pts>
+				</flow>
+				<aux x="1176" y="750" name="AT to quarantine"/>
+				<connector uid="35" angle="187.431">
+					<from>AT_to_quarantine</from>
+					<to>Quarantining</to>
+				</connector>
+				<connector uid="36" angle="88.9377">
+					<from>Infected_2</from>
+					<to>Quarantining</to>
+				</connector>
+				<connector uid="37" angle="358.409">
+					<from>AT_to_quarantine</from>
+					<to>AT_recover_from_quarantine</to>
+				</connector>
+				<connector uid="38" angle="15.7086">
+					<from>AT_infectious_2</from>
+					<to>AT_recover_from_quarantine</to>
+				</connector>
+				<aux x="1109" y="763" name="Proportion quarantining"/>
+				<connector uid="39" angle="112.989">
+					<from>Proportion_quarantining</from>
+					<to>Quarantining</to>
+				</connector>
+				<connector uid="40" angle="291.394">
+					<from>Proportion_quarantining</from>
+					<to>Recovering_2</to>
+				</connector>
+				<connector uid="41" angle="270">
+					<from>Rate_of_contact_between_susceptible_and_infectious</from>
+					<to>Infecting</to>
+				</connector>
+				<connector uid="42" angle="275.834">
+					<from>Rate_of_contact_between_susceptible_and_infectious_2</from>
+					<to>Infecting_2</to>
+				</connector>
+				<stock label_side="center" x="866" y="265" width="67.7778" height="41.1111" name="Susceptible 3"/>
+				<stock label_side="center" x="1012.22" y="265.972" width="62.5" height="39.1667" name="Infected 3"/>
+				<flow label_side="top" x="958" y="276.556" width="18" height="18" name="Infecting 3">
+					<pts>
+						<pt x="933.778" y="285.556"/>
+						<pt x="1012.22" y="285.556"/>
+					</pts>
+				</flow>
+				<flow label_side="top" x="1110.61" y="285.556" name="Recovering 3">
+					<pts>
+						<pt x="1074.72" y="285.556"/>
+						<pt x="1158.5" y="285.556"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="1158.5" y="265.056" width="60" height="41" name="Recovered 3"/>
+				<aux x="967" y="192" name="Rate of contact between susceptible and infectious 3"/>
+				<aux x="1090" y="174" name="Social contacts of infected 3"/>
+				<connector uid="43" angle="40.961">
+					<from>Infected_3</from>
+					<to>Social_contacts_of_infected_3</to>
+				</connector>
+				<aux x="1114.68" y="109" name="Sociability of infected 3"/>
+				<connector uid="44" angle="290.577">
+					<from>Sociability_of_infected_3</from>
+					<to>Social_contacts_of_infected_3</to>
+				</connector>
+				<connector uid="45" angle="131.186">
+					<from>Social_contacts_of_infected_3</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious_3</to>
+				</connector>
+				<aux x="857" y="181" name="Susceptible as fraction of total population 3"/>
+				<connector uid="46" angle="133.466">
+					<from>Susceptible_3</from>
+					<to>Susceptible_as_fraction_of_total_population_3</to>
+				</connector>
+				<aux x="825" y="115" name="Total population 3"/>
+				<connector uid="47" angle="257.905">
+					<from>Total_population_3</from>
+					<to>Susceptible_as_fraction_of_total_population_3</to>
+				</connector>
+				<connector uid="48" angle="41.9872">
+					<from>Susceptible_as_fraction_of_total_population_3</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious_3</to>
+				</connector>
+				<aux label_side="bottom" x="958.5" y="324.17" width="17" height="17" name="Infectioiusness\nof virus 3"/>
+				<connector uid="49" angle="90">
+					<from>Infectioiusness_of_virus_3</from>
+					<to>Infecting_3</to>
+				</connector>
+				<aux x="1110.61" y="332.67" name="AT infectious 3"/>
+				<connector uid="50" angle="90">
+					<from>AT_infectious_3</from>
+					<to>Recovering_3</to>
+				</connector>
+				<connector uid="51" angle="28.3574">
+					<from>Infected_3</from>
+					<to>Recovering_3</to>
+				</connector>
+				<flow x="1043.47" y="352.319" name="Dying 3">
+					<pts>
+						<pt x="1043.47" y="305.139"/>
+						<pt x="1043.47" y="411.5"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="1013.97" y="411.5" width="59" height="36" name="Fatal\nCases 3"/>
+				<aux x="970.5" y="394" name="FR mortality 3"/>
+				<connector uid="52" angle="29.734">
+					<from>FR_mortality_3</from>
+					<to>Dying_3</to>
+				</connector>
+				<connector uid="53" angle="234.117">
+					<from>Infected_3</from>
+					<to>Dying_3</to>
+				</connector>
+				<connector uid="54" angle="270">
+					<from>Rate_of_contact_between_susceptible_and_infectious_3</from>
+					<to>Infecting_3</to>
+				</connector>
+				<stacked_container uid="55" x="1298" y="246.5" width="218" height="198">
+					<graph width="218" height="198" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Fatal_Cases_3"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="56" x="1296" y="31.67" width="222" height="202">
+					<graph width="222" height="202" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Susceptible_3"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Infected_3"/>
+						</plot>
+						<plot color="fuchsia" pen_style="dotted" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="Recovered_3"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stock label_side="center" x="109" y="266.028" width="67.7778" height="41.1111" name="Susceptible 4"/>
+				<stock label_side="center" x="261.5" y="267.417" width="62.5" height="39.1667" name="Infected 4"/>
+				<flow label_side="top" x="213.139" y="286.583" name="Infecting 4">
+					<pts>
+						<pt x="176.778" y="286.583"/>
+						<pt x="261.5" y="286.583"/>
+					</pts>
+				</flow>
+				<flow label_side="top" x="356.75" y="287" name="Recovering 4">
+					<pts>
+						<pt x="324" y="287"/>
+						<pt x="401.5" y="287"/>
+					</pts>
+				</flow>
+				<stock label_side="center" x="401.5" y="266.5" width="60" height="41" name="Recovered 4"/>
+				<aux x="213.73" y="192" name="Rate of contact between susceptible and infectious 4"/>
+				<aux x="317" y="181" name="Social contacts of infected 4"/>
+				<connector uid="57" angle="48.0097">
+					<from>Infected_4</from>
+					<to>Social_contacts_of_infected_4</to>
+				</connector>
+				<aux x="357.68" y="120" name="Sociability of infected 4"/>
+				<connector uid="58" angle="290.577">
+					<from>Sociability_of_infected_4</from>
+					<to>Social_contacts_of_infected_4</to>
+				</connector>
+				<connector uid="59" angle="147.095">
+					<from>Social_contacts_of_infected_4</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious_4</to>
+				</connector>
+				<aux x="100" y="192" name="Susceptible as fraction of total population 4"/>
+				<connector uid="60" angle="143.645">
+					<from>Susceptible_4</from>
+					<to>Susceptible_as_fraction_of_total_population_4</to>
+				</connector>
+				<aux x="68" y="126" name="Total population 4"/>
+				<connector uid="61" angle="257.905">
+					<from>Total_population_4</from>
+					<to>Susceptible_as_fraction_of_total_population_4</to>
+				</connector>
+				<connector uid="62" angle="41.9872">
+					<from>Susceptible_as_fraction_of_total_population_4</from>
+					<to>Rate_of_contact_between_susceptible_and_infectious_4</to>
+				</connector>
+				<aux label_side="bottom" x="204.639" y="331" width="17" height="17" name="Infectioiusness\nof virus 4"/>
+				<connector uid="63" angle="90">
+					<from>Infectioiusness_of_virus_4</from>
+					<to>Infecting_4</to>
+				</connector>
+				<aux x="356.75" y="345.833" name="AT infectious 4"/>
+				<connector uid="64" angle="90">
+					<from>AT_infectious_4</from>
+					<to>Recovering_4</to>
+				</connector>
+				<connector uid="65" angle="28.3574">
+					<from>Infected_4</from>
+					<to>Recovering_4</to>
+				</connector>
+				<connector uid="66" angle="269.642">
+					<from>Rate_of_contact_between_susceptible_and_infectious_4</from>
+					<to>Infecting_4</to>
+				</connector>
+				<text_box uid="67" x="27.2705" y="37" width="187.459" height="23">Class 7 Activity - Structure 1</text_box>
+				<text_box uid="68" x="795.16" y="37" width="187.459" height="23">Class 7 Activity: Structure 2</text_box>
+				<stacked_container uid="69" x="531" y="252.67" width="218" height="198">
+					<graph width="218" height="198" comparative="true" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Infected_4"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<stacked_container uid="70" x="529" y="35" width="222" height="202">
+					<graph width="222" height="202" type="time_series" isee:points_only="false" show_grid="false" include_units_in_legend="false" plot_numbers="false" isee:label_pie_slices="false" num_x_grid_lines="0" num_y_grid_lines="0" num_x_labels="5" num_y_labels="3" isee:fill_intensity="0.1" isee:allow_zero_axis="true" left_axis_multi_scale="false" left_axis_auto_scale="true" left_include_units="true" right_axis_multi_scale="false" right_axis_auto_scale="true" right_include_units="true">
+						<plot color="blue" isee:keep_zero_visible="true" pen_width="1" index="0" show_y_axis="true">
+							<entity name="Recovered_4"/>
+						</plot>
+						<plot color="red" pen_style="dot_dashed" isee:keep_zero_visible="true" pen_width="1" index="1" show_y_axis="true">
+							<entity name="Infected_4"/>
+						</plot>
+						<plot color="fuchsia" pen_style="dotted" isee:keep_zero_visible="true" pen_width="1" index="2" show_y_axis="true">
+							<entity name="Susceptible_4"/>
+						</plot>
+					</graph>
+				</stacked_container>
+				<text_box uid="71" x="530" y="463.5" width="163" height="58">Ellis Ballard
+S65-5660 Spring 2021</text_box>
+				<group locked="false" x="7" y="607" width="749" height="538" name="Class 7 Activity - Structure 3">
+					<item uid="16"/>
+					<item uid="1"/>
+				</group>
+				<group locked="false" x="774" y="610" width="757" height="557" name="Class 7 Activity: Challenge">
+					<item uid="32"/>
+					<item uid="17"/>
+				</group>
+				<group locked="false" x="784" y="31" width="743" height="526" name="Class 7 Activity - Structure 2">
+					<item uid="68"/>
+					<item uid="56"/>
+					<item uid="55"/>
+				</group>
+				<group locked="false" x="16" y="28" width="743" height="527" name="Class 7 Activity - Structure 1">
+					<item uid="67"/>
+					<item uid="69"/>
+					<item uid="70"/>
+					<item uid="71"/>
+				</group>
+			</view>
+		</views>
+	</model>
+</xmile>
+
