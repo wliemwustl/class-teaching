@@ -1,4 +1,3 @@
-# class-teaching
+# Models for the "Designing Sustainable Social Policies and Programs: A System Dynamics Approach" class
 
-This repository contains files used in the "Designing Sustainable Social Policiesand Programs: A System Dynamics Approach" class at the Brown School, Washington
-University in St. Louis.
+This repository contains models used for class. 
